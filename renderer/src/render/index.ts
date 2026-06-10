@@ -12,7 +12,8 @@ export function renderSlide(
 
   if (data.background) {
     if (data.background.color) {
-      slide.background = { color: data.background.color };
+      const hex = data.background.color.replace(/^#/, "");
+      slide.background = { color: hex.length === 8 ? hex.slice(0, 6) : hex };
     }
     if (data.background.image) {
       const imgPath = getAssetPath("images", data.background.image);

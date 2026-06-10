@@ -30,6 +30,12 @@ export function renderSlideElements(
   }
 }
 
+function toRgb(hex: string | undefined): string | undefined {
+  if (!hex) return undefined;
+  const h = hex.replace(/^#/, "");
+  return h.length === 8 ? h.slice(0, 6) : h;
+}
+
 function renderText(slide: PptxSlide, el: TextElement): void {
   slide.addText(el.content, {
     x: el.x,
@@ -38,7 +44,7 @@ function renderText(slide: PptxSlide, el: TextElement): void {
     h: el.h,
     fontSize: el.fontSize,
     fontFace: el.fontFace,
-    color: el.color,
+    color: toRgb(el.color),
     bold: el.bold,
     italic: el.italic,
     align: el.align,
@@ -66,8 +72,8 @@ function renderShape(slide: PptxSlide, el: ShapeElement): void {
     y: el.y,
     w: el.w,
     h: el.h,
-    fill: el.fill ? { color: el.fill } : undefined,
-    line: el.line,
+    fill: el.fill ? { color: toRgb(el.fill)! } : undefined,
+    line: el.line ? { ...el.line, color: toRgb(el.line.color)! } : undefined,
     rectRadius: el.rectRadius,
   });
 }
