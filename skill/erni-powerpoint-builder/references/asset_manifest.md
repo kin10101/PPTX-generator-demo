@@ -35,4 +35,66 @@ Use only these bundled visual assets plus media already embedded in `assets/temp
 
 ## Template icon set
 
-`assets/icons/template-media/` contains the extracted ERNI master icon and brand media from the uploaded template, including line icons for software, cloud, security, engineering, people, process, quality, certificates, location, and growth. Use these files in icon placeholders when the chosen layout expects icons. Keep icon color/style consistent; most are ERNI blue line icons.
+`assets/icons/template-media/` contains ERNI blue line icons extracted from the master template. Use the semantic map below to select meaningful icons. Prefer SVG files. All src values must use the prefix `icons/template-media/`.
+
+| filename | category | description |
+|---|---|---|
+| `image5.svg` | people/contact | Phone / contact icon |
+| `image6.svg` | people/contact | Email / envelope icon |
+| `image7.svg` | brand | ERNI sustainability leaf mark |
+| `image8.svg` | brand | ERNI brand spiral/leaf logo mark |
+| `image16.svg` | people/org | Two-person team / pair icon |
+| `image18.svg` | location | Map with location pin / navigation |
+| `image19.svg` | people/org | Group recognition / ranked team / award |
+| `image20.svg` | settings/process | Add / plus / cross icon |
+| `image22.svg` | location | Globe / world / international |
+| `image23.svg` | location | World map / global reach |
+| `image24.svg` | people/org | Send / share / paper plane |
+| `image25.svg` | people/org | Multi-team / community / crowd |
+| `image45.svg` | innovation | Rocket / launch / acceleration |
+| `image46.svg` | data/analytics | Vision / monitoring / observation target |
+| `image47.svg` | sustainability | Charity / CSR / social responsibility |
+| `image54.svg` | people/org | Heart / wellbeing / favourites |
+| `image55.svg` | people/org | Three-person team / org node |
+| `image56.svg` | innovation | Light bulb with gear / smart solution / innovation |
+| `image57.svg` | data/analytics | Bar chart with settings / performance analytics |
+| `image58.svg` | cloud/tech | Laptop with code / development environment |
+| `image59.svg` | people/org | Collaboration / communication / hybrid workspace |
+| `image60.svg` | certificates/quality | Verified display / quality achievement |
+| `image61.svg` | cloud/tech | Developer / programmer profile |
+| `image62.svg` | settings/process | Dual gears / settings / engineering / configuration |
+| `image63.svg` | certificates/quality | Checkmark / task complete / verified |
+| `image64.svg` | security | Bullseye / precision / target / focus |
+| `image65.svg` | cloud/tech | Connected nodes / system architecture / tech ecosystem |
+| `image66.svg` | people/org | Live chat / customer support / dual-channel communication |
+| `image67.svg` | people/org | Cross-functional team / agile squad / stakeholder hub |
+| `image68.svg` | location | Route/logistics map with data table |
+| `image69.svg` | location | Office buildings / campus / urban facility |
+| `image70.svg` | security | Secure institution / bank / certified compliance authority |
+| `image71.svg` | people/org | Helpdesk / user support / virtual assistant |
+| `image72.svg` | cloud/tech | Laptop with terminal / coding environment |
+| `image73.svg` | certificates/quality | Quality certificate / award document / compliance seal |
+| `image74.svg` | cloud/tech | Cloud development / cloud-native / cloud coding |
+| `image75.svg` | cloud/tech | Dual-screen / full-stack / multi-platform development |
+| `image76.svg` | settings/process | Process workflow / step-sequence / settings |
+| `image77.svg` | settings/process | DevOps / automation / dual gears / integration |
+| `image78.svg` | settings/process | Agile loop / DevOps cycle / continuous improvement |
+| `image79.svg` | security | Verified data / secure dataset / data integrity |
+| `image80.svg` | innovation | Smart solution on platform / intelligent system |
+| `image84.svg` | settings/process | Settings / engineering (gear variant) |
+| `image85.svg` | cloud/tech | Browser with terminal / web command prompt |
+| `image86.svg` | cloud/tech | Code brackets `< >` / programming / HTML |
+| `image87.svg` | certificates/quality | Checklist / audit document / pass-fail compliance |
+| `image88.svg` | cloud/tech | Database cylinder / server storage |
+| `image90.svg` | data/analytics | Bar chart / analytics / statistics / KPI |
+| `image91.svg` | cloud/tech | Cloud icon |
+| `image92.svg` | certificates/quality | Mixed-result audit / compliance checklist |
+| `image104.svg` | settings/process | Precision gear / industrial mechanism / advanced configuration |
+| `image106.svg` | people/org | Talent funnel / knowledge transfer / skills pipeline |
+| `image107.svg` | innovation | Design / drawing / CAD / creative work |
+| `image110.svg` | cloud/tech | 3D box / package / product / blockchain block |
+| `image120.svg` | people/org | Presenter / speaker / employee profile |
+| `image121.svg` | cloud/tech | Developer profile / technical speaker |
+| `image124.svg` | location | Global expansion / international growth |
+
+**Note:** PNG files (image96–image122 range) are likely certification logos or vendor badges — use sparingly and only when the context is clearly about certifications or partnerships.
