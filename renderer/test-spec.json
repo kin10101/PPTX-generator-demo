@@ -1,0 +1,60 @@
+{
+  "metadata": {
+    "title": "Test Presentation",
+    "output": "../output/test.pptx"
+  },
+  "slides": [
+    {
+      "slideIndex": 1,
+      "layoutName": "Cover Layout 1",
+      "image": "cyan-magenta-fluid-ribbon-57.jpg",
+      "content": {
+        "title": "Digital Transformation",
+        "subtitle": "Accelerating Innovation at Scale"
+      }
+    },
+    {
+      "slideIndex": 2,
+      "layoutName": "Section Layout 1",
+      "content": {
+        "title": "Our Approach",
+        "subtitle": "01"
+      }
+    },
+    {
+      "slideIndex": 3,
+      "layoutName": "Info Layout 2a",
+      "icons": [],
+      "content": {
+        "title": "Three Pillars of Success",
+        "subtitle": "Built on proven methodology",
+        "options": [
+          {"title": "Strategy", "description": "Align technology with business goals"},
+          {"title": "Execution", "description": "Deliver measurable outcomes on time"},
+          {"title": "Innovation", "description": "Continuously evolve and improve"}
+        ]
+      }
+    },
+    {
+      "slideIndex": 4,
+      "layoutName": "Flow Layout 3b",
+      "content": {
+        "title": "Implementation Roadmap",
+        "steps": [
+          {"number": "1", "title": "Assess", "description": "Evaluate current state"},
+          {"number": "2", "title": "Design", "description": "Architecture and plan"},
+          {"number": "3", "title": "Build", "description": "Iterative development"},
+          {"number": "4", "title": "Deploy", "description": "Staged rollout"},
+          {"number": "5", "title": "Optimize", "description": "Continuous improvement"}
+        ]
+      }
+    },
+    {
+      "slideIndex": 5,
+      "layoutName": "Back Cover 2",
+      "content": {
+        "title": ""
+      }
+    }
+  ]
+}
