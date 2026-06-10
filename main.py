@@ -71,7 +71,7 @@ def read_skills(state: AgentState) -> AgentState:
     print("\n[read_skills] Loading skill files...")
     contents = {}
     for path in state["selected_skills"]:
-        with open(path) as f:
+        with open(path, encoding='utf-8') as f:
             contents[path] = f.read()
         skill_dir = os.path.dirname(path)
         refs_dir = os.path.join(skill_dir, "references")
@@ -79,7 +79,7 @@ def read_skills(state: AgentState) -> AgentState:
             for ref_file in os.listdir(refs_dir):
                 ref_path = os.path.join(refs_dir, ref_file)
                 if os.path.isfile(ref_path):
-                    with open(ref_path) as f:
+                    with open(ref_path, encoding='utf-8') as f:
                         contents[ref_path] = f.read()
     print(f"[read_skills] Loaded {len(contents)} files")
     return {**state, "skill_contents": contents}
@@ -223,7 +223,7 @@ Available icons (use exact filenames): {icons_list}
 REFERENCE GUIDELINES (layout recipes, data viz patterns, icon meanings):
 {skill_context}
 
-═══ COORDINATE RECIPES ═══
+== COORDINATE RECIPES ==
 
 COVER (hero image right):
   image:    x=6.67 y=0    w=6.66 h=7.5  (sizing cover)
@@ -264,7 +264,7 @@ IMAGE LEFT + TEXT RIGHT:
   title: x=6.50 y=1.20 w=6.30 h=0.80 fontSize=26 bold erniBlue
   body:  x=6.50 y=2.20 w=6.30 h=3.50 fontSize=13 darkGray valign=top
 
-═══ DESIGN RULES ═══
+== DESIGN RULES ==
 
 1. ALWAYS use shape elements as structural components:
    - Use rect shapes as card backgrounds BEFORE placing text on top
