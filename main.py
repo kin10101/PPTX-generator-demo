@@ -15,6 +15,7 @@ client = wrap_openai(OpenAI())
 SKILL_DIR = "./skill"
 RENDERER_URL = os.environ.get("RENDERER_URL", "http://localhost:3001")
 LLM_MODEL = os.environ.get("LLM_MODEL", "gpt-4o")
+LLM_TEMPERATURE = float(os.environ.get("LLM_TEMPERATURE", "")) if os.environ.get("LLM_TEMPERATURE") else None
 
 IMAGES_DIR = "./skill/erni-powerpoint-builder/assets/images"
 ICONS_DIR = "./skill/erni-powerpoint-builder/assets/icons/template-media"
@@ -99,7 +100,7 @@ def plan_presentation(state: AgentState) -> AgentState:
 
     response = client.chat.completions.create(
         model=LLM_MODEL,
-        temperature=0.7,
+        **({"temperature": LLM_TEMPERATURE} if LLM_TEMPERATURE is not None else {}),
         response_format={"type": "json_object"},
         messages=[
             {
@@ -144,7 +145,7 @@ def outline_slides(state: AgentState) -> AgentState:
 
     response = client.chat.completions.create(
         model=LLM_MODEL,
-        temperature=0.3,
+        **({"temperature": LLM_TEMPERATURE} if LLM_TEMPERATURE is not None else {}),
         response_format={"type": "json_object"},
         messages=[
             {
@@ -200,7 +201,7 @@ def generate_content(state: AgentState) -> AgentState:
 
     response = client.chat.completions.create(
         model=LLM_MODEL,
-        temperature=0.3,
+        **({"temperature": LLM_TEMPERATURE} if LLM_TEMPERATURE is not None else {}),
         response_format={"type": "json_object"},
         messages=[
             {
