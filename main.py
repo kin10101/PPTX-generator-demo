@@ -316,7 +316,9 @@ def build_slide_spec(state: AgentState) -> AgentState:
         slide["footer"] = s.get("footer", True)
         slides.append(slide)
 
-    output_path = f"./output/{state['plan'].get('title', 'presentation').replace(' ', '_')}.pptx"
+    raw_title = state['plan'].get('title', 'presentation')
+    safe_title = "".join(c if c.isalnum() or c in (' ', '-', '_') else '_' for c in raw_title).replace(' ', '_')
+    output_path = f"./output/{safe_title}.pptx"
     slide_spec = {
         "metadata": {"title": state["plan"].get("title", "Presentation"), "output": output_path},
         "slides": slides,
