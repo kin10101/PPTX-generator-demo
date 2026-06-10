@@ -9,7 +9,7 @@ const SKILL_ROOT = path.resolve(
 );
 
 export function getAssetPath(
-  category: "images" | "icons/template-media",
+  category: "images" | "icons/template-media" | string,
   filename: string
 ): string {
   return path.join(SKILL_ROOT, "assets", category, filename);

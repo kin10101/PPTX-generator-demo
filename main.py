@@ -18,24 +18,27 @@ RENDERER_URL = os.environ.get("RENDERER_URL", "http://localhost:3001")
 IMAGES_DIR = "./skill/erni-powerpoint-builder/assets/images"
 ICONS_DIR = "./skill/erni-powerpoint-builder/assets/icons/template-media"
 
-IMPLEMENTED_LAYOUTS = """- Cover Layout 1: title + subtitle + hero image (right half). Use for opening slide with a strong visual.
-- Cover Layout 2: title + subtitle (white background, no image). Use for clean text-only opener.
-- Cover Layout 3: title + subtitle (right-aligned, white). Alternative opening style.
-- Section Layout 1: section number + title + subtitle (blue divider). Use to separate chapters.
-- Info Layout 5a: title + subtitle + body text (single column, right side). General-purpose narrative slide.
-- Info Layout 5b: title + subtitle + body text (two columns). Use when comparing two ideas or longer text.
-- Info Layout Image and Text 6a: image (left panel) + title + body (single column). Use for visual storytelling.
-- Info Layout Image and Text 6b: image (left panel) + title + body (two columns). Image slide with more text.
-- Info Layout 2a: title + 3 icons with labels, vertical separators. Use for pillars, principles, capabilities.
-- Flow Layout 3b: subtitle + numbered steps with descriptions. Use for processes, timelines, lifecycles.
-- Chart Layout 2a: subtitle + 3 icons with descriptions. Use for comparisons, feature highlights.
-- Containers Layout: 6-box grid for facts/figures/short items. Use for KPIs, stats, quick facts.
-- People Layout 1: team or profile slide. Use for team introductions.
-- Back Cover 1: closing/contact slide.
-- Back Cover 2: closing variant.
-- Back Cover 3: closing variant."""
-
 AVAILABLE_IMAGES = [f for f in os.listdir(IMAGES_DIR) if f.endswith(('.jpg', '.png'))] if os.path.isdir(IMAGES_DIR) else []
+AVAILABLE_ICONS = [f for f in os.listdir(ICONS_DIR) if f.endswith(('.svg', '.png', '.jpeg'))] if os.path.isdir(ICONS_DIR) else []
+
+ELEMENT_SCHEMA = """Each slide has an "elements" array. Each element is one of:
+
+1. TEXT element:
+   { "type": "text", "content": "...", "x": <inches>, "y": <inches>, "w": <inches>, "h": <inches>,
+     "fontSize": <number>, "fontFace": "Source Sans Pro", "color": "<hex without #>",
+     "bold": true/false, "align": "left"|"center"|"right", "valign": "top"|"middle"|"bottom" }
+
+2. IMAGE element:
+   { "type": "image", "src": "images/<filename>", "x": <inches>, "y": <inches>, "w": <inches>, "h": <inches>,
+     "sizing": { "type": "cover", "w": <inches>, "h": <inches> } }
+
+3. SHAPE element:
+   { "type": "shape", "shape": "rect"|"ellipse"|"line", "x": <inches>, "y": <inches>, "w": <inches>, "h": <inches>,
+     "fill": "<hex>", "line": { "color": "<hex>", "width": <number> }, "rectRadius": <number> }
+
+4. ICON element:
+   { "type": "icon", "src": "icons/template-media/<filename>", "x": <inches>, "y": <inches>, "w": <inches>, "h": <inches> }
+"""
 
 
 # ============================================
@@ -73,8 +76,9 @@ def read_skills(state: AgentState) -> AgentState:
         if os.path.isdir(refs_dir):
             for ref_file in os.listdir(refs_dir):
                 ref_path = os.path.join(refs_dir, ref_file)
-                with open(ref_path) as f:
-                    contents[ref_path] = f.read()
+                if os.path.isfile(ref_path):
+                    with open(ref_path) as f:
+                        contents[ref_path] = f.read()
     print(f"[read_skills] Loaded {len(contents)} files")
     return {**state, "skill_contents": contents}
 
@@ -89,7 +93,7 @@ def plan_presentation(state: AgentState) -> AgentState:
     skill_context = "\n\n".join(
         f"# {path}\n{content}"
         for path, content in state["skill_contents"].items()
-        if "SKILL.md" in path
+        if "SKILL.md" in path or "template_pattern_guide" in path
     )
 
     response = client.chat.completions.create(
@@ -104,6 +108,8 @@ Use these skill instructions to plan the narrative:
 
 {skill_context}
 
+SLIDE CANVAS: 13.33 inches wide × 7.5 inches tall.
+
 Return a JSON object with:
 - title: string
 - audience: string
@@ -117,17 +123,23 @@ Return a JSON object with:
 
     plan = json.loads(response.choices[0].message.content)
     print(f"[plan_presentation] Plan: \"{plan.get('title')}\" — {plan.get('slideCount', '?')} slides")
-    print(f"[plan_presentation] Narrative arc:")
     for arc in plan.get("narrativeArc", []):
         print(f"  Slide {arc.get('slideIndex')}: [{arc.get('intent')}] {arc.get('workingTitle')}")
     return {**state, "plan": plan}
 
 
 def outline_slides(state: AgentState) -> AgentState:
-    """Step 2: Select layouts, images, and icons for each slide."""
-    print("\n[outline_slides] Selecting layouts and images...")
+    """Step 2: Define layout intent, select images and icons per slide."""
+    print("\n[outline_slides] Defining layout intents and selecting assets...")
 
     images_list = "\n".join(f"  - {img}" for img in AVAILABLE_IMAGES)
+    icons_list = "\n".join(f"  - {icon}" for icon in AVAILABLE_ICONS[:30])
+
+    layout_catalog = ""
+    for path, content in state["skill_contents"].items():
+        if "layout_catalog" in path:
+            layout_catalog = content
+            break
 
     response = client.chat.completions.create(
         model="gpt-4o",
@@ -136,48 +148,54 @@ def outline_slides(state: AgentState) -> AgentState:
         messages=[
             {
                 "role": "system",
-                "content": f"""You are a slide layout specialist for ERNI consulting decks.
-Given the presentation plan, select the best layout, image, and icons for each slide.
+                "content": f"""You are a slide layout planner for ERNI consulting decks.
+Given the presentation plan, define a layout intent and select assets for each slide.
 
-IMPORTANT: Use ONLY these exact layout names (these are the only ones the renderer supports):
-{IMPLEMENTED_LAYOUTS}
+Layout catalog (for inspiration — you can compose any layout):
+{layout_catalog}
 
-Available background images (use bare filename only, no path prefix):
+Available background images (use bare filename):
 {images_list}
 
-Layout selection guidance:
-- First slide should use a Cover Layout
-- Last slide should use a Back Cover
-- Use Section Layout 1 for chapter dividers
-- Use Flow Layout 3b for processes, timelines, or lifecycle content
-- Use Containers Layout for facts, stats, or KPIs
-- Use Info Layout Image and Text 6a/6b when you want a visual + text combo
-- Use Info Layout 2a or Chart Layout 2a when you have 3 parallel items
-- Vary layouts across the deck — avoid using the same layout on consecutive slides
+Available icons (use bare filename):
+{icons_list}
 
 Return a JSON object with:
-- slides: array of objects with slideIndex, layoutName (exact name from the list above), image (bare filename like "orange-wave-70.jpg" — only for Cover Layout 1, Info Layout Image and Text 6a/6b, or section dividers; omit for other layouts), icons (array of filenames from assets/icons/template-media/ or empty array)"""
+- slides: array of objects with:
+  - slideIndex: number
+  - layoutIntent: string (brief description like "cover with hero image right half", "3-column process flow", "full-text narrative with subtitle")
+  - image: string or null (bare filename from available images — use for cover slides, visual slides)
+  - icons: array of icon filenames (or empty array)
+
+Guidelines:
+- First slide should be a cover-style layout
+- Last slide should be a closing/back-cover style
+- Vary layouts — don't repeat the same pattern on consecutive slides
+- Use images sparingly (covers, section dividers, visual storytelling)"""
             },
             {"role": "user", "content": json.dumps(state["plan"])},
         ],
     )
 
     outline = json.loads(response.choices[0].message.content)
-    print(f"[outline_slides] Slide layout assignments:")
+    print(f"[outline_slides] Slide outlines:")
     for s in outline.get("slides", []):
-        img = s.get("image", "—")
-        icons = s.get("icons", [])
-        print(f"  Slide {s.get('slideIndex')}: {s.get('layoutName')} | image={img} | icons={len(icons)}")
+        img = s.get("image") or "—"
+        print(f"  Slide {s.get('slideIndex')}: {s.get('layoutIntent')} | image={img}")
     return {**state, "outline": outline}
 
 
 def generate_content(state: AgentState) -> AgentState:
-    """Step 3: Generate text content for each slide."""
-    print("\n[generate_content] Generating slide content...")
+    """Step 3: Generate full element-based slide specs with positioning."""
+    print("\n[generate_content] Generating element-based slide specs...")
+
     skill_context = ""
     for path, content in state["skill_contents"].items():
-        if "SKILL.md" in path or "template_pattern_guide" in path:
-            skill_context += f"\n\n{content}"
+        if any(k in path for k in ["template_pattern_guide", "layout_catalog", "asset_manifest"]):
+            skill_context += f"\n\n--- {os.path.basename(path)} ---\n{content}"
+
+    images_list = ", ".join(AVAILABLE_IMAGES)
+    icons_list = ", ".join(AVAILABLE_ICONS[:30])
 
     response = client.chat.completions.create(
         model="gpt-4o",
@@ -186,44 +204,61 @@ def generate_content(state: AgentState) -> AgentState:
         messages=[
             {
                 "role": "system",
-                "content": f"""You are a content writer for ERNI consulting presentations.
-Write concise, assertive slide text following these style rules:
+                "content": f"""You are a slide layout engine for ERNI consulting decks.
+Generate complete, pixel-positioned slide elements for each slide.
 
+SLIDE CANVAS: 13.33 inches wide × 7.5 inches tall.
+FONT: Source Sans Pro
+BRAND COLORS: erniBlue=033778, cyan=00AADB, darkGray=3C3C3B, lightGray=B1B0B1, white=FFFFFF
+FOOTER: Automatically rendered by the system (do NOT include footer elements).
+
+{ELEMENT_SCHEMA}
+
+Available images: {images_list}
+Available icons: {icons_list}
+
+REFERENCE GUIDELINES:
 {skill_context}
 
-Given the plan and outline, generate content for each slide.
+RULES:
+- All positions are in inches from top-left origin
+- Keep elements within canvas bounds (0-13.33 x, 0-7.5 y)
+- Use only "Source Sans Pro" as fontFace
+- Use only hex colors without # prefix
+- For images, use "images/<filename>" as src
+- For icons, use "icons/template-media/<filename>" as src
+- Title text: 26-40pt, bold, erniBlue (033778)
+- Subtitle text: 16-20pt, darkGray (3C3C3B)
+- Body text: 12-14pt, darkGray (3C3C3B)
+- Leave ~0.8" margins on sides
+- Leave top 0.6" clear for footer area
 
 Return a JSON object with:
-- slides: array of objects with slideIndex, and content object containing: title (string), subtitle (optional string), body (optional string), options (optional array of {{title, description}}), steps (optional array of {{number, title, description}}), metrics (optional array of {{value, label}}), footnote (optional string)
-
-IMPORTANT content rules:
-- Every content slide (not cover, section divider, or back cover) MUST have body text of 2-4 sentences.
-- Match structured content to the layout chosen in the outline:
-  - Flow Layout 3b → MUST include steps (3-4 items with number, title, description)
-  - Containers Layout → MUST include options (4-6 items) OR metrics (4-6 items)
-  - Chart Layout 2a → MUST include metrics (3 items with value and label)
-  - Info Layout 2a → MUST include options (3 items with title and description)
-  - Info Layout 5a/5b/6a/6b → MUST include body text (3-5 sentences)
-- Use at least one structured element (options, steps, or metrics) on at least half of all content slides.
-- Keep titles concise and assertive (max 6 words). Use short body copy. Keep option/step titles parallel."""
+- slides: array where each object has:
+  - slideIndex: number
+  - background: {{ "color": "<hex>" }} (optional, default white)
+  - elements: array of element objects as defined above"""
             },
             {
                 "role": "user",
-                "content": json.dumps({"plan": state["plan"], "outline": state["outline"]}),
+                "content": json.dumps({
+                    "plan": state["plan"],
+                    "outline": state["outline"],
+                }),
             },
         ],
     )
 
     content = json.loads(response.choices[0].message.content)
-    print(f"[generate_content] Content generated for {len(content.get('slides', []))} slides:")
+    print(f"[generate_content] Generated elements for {len(content.get('slides', []))} slides:")
     for s in content.get("slides", []):
-        c = s.get("content", s)
-        elements = []
-        if c.get("body"): elements.append(f"body({len(c['body'])} chars)")
-        if c.get("options"): elements.append(f"options({len(c['options'])})")
-        if c.get("steps"): elements.append(f"steps({len(c['steps'])})")
-        if c.get("metrics"): elements.append(f"metrics({len(c['metrics'])})")
-        print(f"  Slide {s.get('slideIndex')}: \"{c.get('title', '?')}\" — {', '.join(elements) or 'title only'}")
+        el_count = len(s.get("elements", []))
+        types = {}
+        for el in s.get("elements", []):
+            t = el.get("type", "?")
+            types[t] = types.get(t, 0) + 1
+        type_str = ", ".join(f"{v} {k}" for k, v in types.items())
+        print(f"  Slide {s.get('slideIndex')}: {el_count} elements ({type_str})")
     return {**state, "content": content}
 
 
@@ -232,69 +267,53 @@ IMPORTANT content rules:
 # ============================================
 
 def build_slide_spec(state: AgentState) -> AgentState:
-    """Merge outline and content into the renderer's input format."""
-    print("\n[build_slide_spec] Building slide spec...")
-    outline_slides = state["outline"].get("slides", [])
-    content_slides = state["content"].get("slides", [])
-
-    content_by_index = {s["slideIndex"]: s.get("content", s) for s in content_slides}
+    """Validate elements and assemble the final renderer spec."""
+    print("\n[build_slide_spec] Building and validating slide spec...")
 
     valid_images = set(os.listdir(IMAGES_DIR)) if os.path.isdir(IMAGES_DIR) else set()
     valid_icons = set(os.listdir(ICONS_DIR)) if os.path.isdir(ICONS_DIR) else set()
 
+    raw_slides = state["content"].get("slides", [])
     slides = []
-    for s in outline_slides:
-        idx = s["slideIndex"]
-        content_data = content_by_index.get(idx, {})
-        if "title" not in content_data and "content" in content_data:
-            content_data = content_data["content"]
 
-        raw_image = s.get("image")
-        image = raw_image.split("/")[-1] if raw_image else None
-        if image and image not in valid_images:
-            print(f"  [!] Dropping invalid image '{image}' from slide {idx}")
-            image = None
+    for s in raw_slides:
+        elements = []
+        for el in s.get("elements", []):
+            el_type = el.get("type")
 
-        raw_icons = s.get("icons", [])
-        icons = [i if isinstance(i, str) else i.get("name", str(i)) for i in raw_icons] if raw_icons else []
-        icons = [i.split("/")[-1] for i in icons]
-        invalid_icons = [i for i in icons if i not in valid_icons]
-        if invalid_icons:
-            print(f"  [!] Dropping invalid icons from slide {idx}: {invalid_icons}")
-            icons = [i for i in icons if i in valid_icons]
+            if el_type == "image":
+                src = el.get("src", "")
+                filename = src.split("/")[-1] if "/" in src else src
+                if filename not in valid_images:
+                    print(f"  [!] Dropping invalid image '{src}' from slide {s.get('slideIndex')}")
+                    continue
+                el["src"] = f"images/{filename}"
 
-        raw_metrics = content_data.get("metrics")
-        metrics = (
-            [{"value": str(m["value"]), "label": str(m["label"])} for m in raw_metrics]
-            if raw_metrics else None
-        )
+            elif el_type == "icon":
+                src = el.get("src", "")
+                filename = src.split("/")[-1] if "/" in src else src
+                if filename not in valid_icons:
+                    print(f"  [!] Dropping invalid icon '{src}' from slide {s.get('slideIndex')}")
+                    continue
+                el["src"] = f"icons/template-media/{filename}"
 
-        raw_steps = content_data.get("steps")
-        steps = (
-            [{"title": st["title"], "description": st["description"], **({"number": str(st["number"])} if "number" in st else {})} for st in raw_steps]
-            if raw_steps else None
-        )
+            elif el_type == "text":
+                if "content" not in el or not isinstance(el.get("content"), str):
+                    continue
 
-        content = {"title": content_data.get("title", "")}
-        for key, val in [
-            ("subtitle", content_data.get("subtitle")),
-            ("body", content_data.get("body")),
-            ("options", content_data.get("options")),
-            ("steps", steps),
-            ("metrics", metrics),
-            ("footnote", content_data.get("footnote")),
-        ]:
-            if val is not None:
-                content[key] = val
+            elif el_type == "shape":
+                if "shape" not in el:
+                    continue
+
+            elements.append(el)
 
         slide = {
-            "slideIndex": idx,
-            "layoutName": s.get("layoutName", "Info Layout 5a"),
-            "icons": icons,
-            "content": content,
+            "slideIndex": s.get("slideIndex", len(slides) + 1),
+            "elements": elements,
         }
-        if image is not None:
-            slide["image"] = image
+        if s.get("background"):
+            slide["background"] = s["background"]
+        slide["footer"] = s.get("footer", True)
         slides.append(slide)
 
     output_path = f"./output/{state['plan'].get('title', 'presentation').replace(' ', '_')}.pptx"
@@ -334,6 +353,7 @@ def render_pptx(state: AgentState) -> AgentState:
         )
         if result.returncode != 0:
             raise RuntimeError(f"Renderer failed: {result.stderr}")
+        print(f"[render_pptx] Complete (subprocess): {state['slide_spec']['metadata']['output']}")
         return {**state, "output_path": state["slide_spec"]["metadata"]["output"]}
 
 

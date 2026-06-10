@@ -1,60 +1,205 @@
 {
   "metadata": {
-    "title": "Test Presentation",
-    "output": "../output/test.pptx"
+    "title": "Dynamic Renderer Test",
+    "output": "./output/dynamic_test.pptx"
   },
   "slides": [
     {
       "slideIndex": 1,
-      "layoutName": "Cover Layout 1",
-      "image": "cyan-magenta-fluid-ribbon-57.jpg",
-      "content": {
-        "title": "Digital Transformation",
-        "subtitle": "Accelerating Innovation at Scale"
-      }
+      "background": { "color": "FFFFFF" },
+      "footer": true,
+      "elements": [
+        {
+          "type": "image",
+          "src": "images/orange-wave-70.jpg",
+          "x": 6.67,
+          "y": 0,
+          "w": 6.66,
+          "h": 7.5,
+          "sizing": { "type": "cover", "w": 6.66, "h": 7.5 }
+        },
+        {
+          "type": "text",
+          "content": "Dynamic Renderer Test",
+          "x": 0.8,
+          "y": 2.4,
+          "w": 5.5,
+          "h": 1.8,
+          "fontSize": 36,
+          "fontFace": "Source Sans Pro",
+          "color": "033778",
+          "bold": true,
+          "valign": "bottom"
+        },
+        {
+          "type": "text",
+          "content": "Testing element-based slide generation",
+          "x": 0.8,
+          "y": 4.4,
+          "w": 5.5,
+          "h": 1.0,
+          "fontSize": 18,
+          "fontFace": "Source Sans Pro",
+          "color": "3C3C3B"
+        }
+      ]
     },
     {
       "slideIndex": 2,
-      "layoutName": "Section Layout 1",
-      "content": {
-        "title": "Our Approach",
-        "subtitle": "01"
-      }
-    },
-    {
-      "slideIndex": 3,
-      "layoutName": "Info Layout 2a",
-      "icons": [],
-      "content": {
-        "title": "Three Pillars of Success",
-        "subtitle": "Built on proven methodology",
-        "options": [
-          {"title": "Strategy", "description": "Align technology with business goals"},
-          {"title": "Execution", "description": "Deliver measurable outcomes on time"},
-          {"title": "Innovation", "description": "Continuously evolve and improve"}
-        ]
-      }
-    },
-    {
-      "slideIndex": 4,
-      "layoutName": "Flow Layout 3b",
-      "content": {
-        "title": "Implementation Roadmap",
-        "steps": [
-          {"number": "1", "title": "Assess", "description": "Evaluate current state"},
-          {"number": "2", "title": "Design", "description": "Architecture and plan"},
-          {"number": "3", "title": "Build", "description": "Iterative development"},
-          {"number": "4", "title": "Deploy", "description": "Staged rollout"},
-          {"number": "5", "title": "Optimize", "description": "Continuous improvement"}
-        ]
-      }
-    },
-    {
-      "slideIndex": 5,
-      "layoutName": "Back Cover 2",
-      "content": {
-        "title": ""
-      }
+      "footer": true,
+      "elements": [
+        {
+          "type": "text",
+          "content": "Three Key Points",
+          "x": 0.8,
+          "y": 0.7,
+          "w": 11.73,
+          "h": 0.8,
+          "fontSize": 26,
+          "fontFace": "Source Sans Pro",
+          "color": "033778",
+          "bold": true
+        },
+        {
+          "type": "text",
+          "content": "This slide demonstrates multiple elements positioned by the LLM",
+          "x": 0.8,
+          "y": 1.55,
+          "w": 11.73,
+          "h": 0.5,
+          "fontSize": 16,
+          "fontFace": "Source Sans Pro",
+          "color": "3C3C3B"
+        },
+        {
+          "type": "shape",
+          "shape": "ellipse",
+          "x": 1.5,
+          "y": 3.0,
+          "w": 0.6,
+          "h": 0.6,
+          "fill": "033778"
+        },
+        {
+          "type": "text",
+          "content": "1",
+          "x": 1.5,
+          "y": 3.0,
+          "w": 0.6,
+          "h": 0.6,
+          "fontSize": 14,
+          "fontFace": "Source Sans Pro",
+          "color": "FFFFFF",
+          "bold": true,
+          "align": "center",
+          "valign": "middle"
+        },
+        {
+          "type": "text",
+          "content": "Flexibility",
+          "x": 2.3,
+          "y": 3.0,
+          "w": 2.5,
+          "h": 0.6,
+          "fontSize": 14,
+          "fontFace": "Source Sans Pro",
+          "color": "033778",
+          "bold": true,
+          "valign": "middle"
+        },
+        {
+          "type": "shape",
+          "shape": "ellipse",
+          "x": 5.5,
+          "y": 3.0,
+          "w": 0.6,
+          "h": 0.6,
+          "fill": "033778"
+        },
+        {
+          "type": "text",
+          "content": "2",
+          "x": 5.5,
+          "y": 3.0,
+          "w": 0.6,
+          "h": 0.6,
+          "fontSize": 14,
+          "fontFace": "Source Sans Pro",
+          "color": "FFFFFF",
+          "bold": true,
+          "align": "center",
+          "valign": "middle"
+        },
+        {
+          "type": "text",
+          "content": "Simplicity",
+          "x": 6.3,
+          "y": 3.0,
+          "w": 2.5,
+          "h": 0.6,
+          "fontSize": 14,
+          "fontFace": "Source Sans Pro",
+          "color": "033778",
+          "bold": true,
+          "valign": "middle"
+        },
+        {
+          "type": "shape",
+          "shape": "ellipse",
+          "x": 9.5,
+          "y": 3.0,
+          "w": 0.6,
+          "h": 0.6,
+          "fill": "033778"
+        },
+        {
+          "type": "text",
+          "content": "3",
+          "x": 9.5,
+          "y": 3.0,
+          "w": 0.6,
+          "h": 0.6,
+          "fontSize": 14,
+          "fontFace": "Source Sans Pro",
+          "color": "FFFFFF",
+          "bold": true,
+          "align": "center",
+          "valign": "middle"
+        },
+        {
+          "type": "text",
+          "content": "Data-Driven",
+          "x": 10.3,
+          "y": 3.0,
+          "w": 2.5,
+          "h": 0.6,
+          "fontSize": 14,
+          "fontFace": "Source Sans Pro",
+          "color": "033778",
+          "bold": true,
+          "valign": "middle"
+        },
+        {
+          "type": "shape",
+          "shape": "line",
+          "x": 0.8,
+          "y": 5.5,
+          "w": 11.73,
+          "h": 0,
+          "line": { "color": "B1B0B1", "width": 1 }
+        },
+        {
+          "type": "text",
+          "content": "The renderer simply translates this JSON into pptxgenjs calls.",
+          "x": 0.8,
+          "y": 5.7,
+          "w": 11.73,
+          "h": 0.5,
+          "fontSize": 12,
+          "fontFace": "Source Sans Pro",
+          "color": "3C3C3B"
+        }
+      ]
     }
   ]
 }
