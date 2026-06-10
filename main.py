@@ -14,6 +14,7 @@ from state import AgentState
 client = wrap_openai(OpenAI())
 SKILL_DIR = "./skill"
 RENDERER_URL = os.environ.get("RENDERER_URL", "http://localhost:3001")
+LLM_MODEL = os.environ.get("LLM_MODEL", "gpt-4o")
 
 IMAGES_DIR = "./skill/erni-powerpoint-builder/assets/images"
 ICONS_DIR = "./skill/erni-powerpoint-builder/assets/icons/template-media"
@@ -97,7 +98,7 @@ def plan_presentation(state: AgentState) -> AgentState:
     )
 
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model=LLM_MODEL,
         temperature=0.7,
         response_format={"type": "json_object"},
         messages=[
@@ -142,7 +143,7 @@ def outline_slides(state: AgentState) -> AgentState:
             break
 
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model=LLM_MODEL,
         temperature=0.3,
         response_format={"type": "json_object"},
         messages=[
@@ -198,7 +199,7 @@ def generate_content(state: AgentState) -> AgentState:
     icons_list = ", ".join(AVAILABLE_ICONS[:30])
 
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model=LLM_MODEL,
         temperature=0.3,
         response_format={"type": "json_object"},
         messages=[
